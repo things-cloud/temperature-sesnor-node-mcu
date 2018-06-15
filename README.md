@@ -93,6 +93,7 @@ switch(qry[3])
          PostValue = PostValue +",\"data\":{\"celc\":" + t2 +",\"fahr\":" + t3 +"}"+"}";
 //Celc  temperature in celcius
 //Fahrtemperature in Fahrenheit
+//you can change the authorization
 ```
 
 
