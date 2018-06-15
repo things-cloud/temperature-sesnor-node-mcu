@@ -39,147 +39,61 @@
 ![alt text](https://s3.ap-south-1.amazonaws.com/thingsio-tuts/tutorial_html_m2c1996f2.png "graph") 
  
 
-# Platform: Windows
+## Platform: Windows
+## TEMPERATURE SENSOR WITH NODE MCU
+## IDE: ARDUINO
+## CHIP: ESP8266 MOD WiFi  MODULE
+1.LIBRARIES INCLUDED
+a)  ```#include <SoftwareSerial.h>```
+Install arduino IDE 
+Go to sketch>include library>library manager>search software serial>install
+Checkout the  link provided for the detailed video on how to setup Arduino tool chain and libary for ESP8266:  https://youtu.be/ftO-_nfBBZk
+b) ```#include <ESP8266WiFi.h> ```
+(https://github.com/esp8266/Arduino  )
+c) ``` #include <DNSServer.h>```
+Go to sketch>include library>library manager>search DNSserver>install
+d)``` #include <ESP8266WebServer.h>```
+Go to sketch>include library>library manager>search >install
+e)``` #include "WiFiManager.h"   ``` 
+(https://github.com/tzapu/WiFiManager)
+      2. CODE MODIFICATIONS
+a) define the host 
+       		    ```const char* host = "api.thingsio.ai";```
+b) define the post url
+       	```	    const char* post_url = "/devices/deviceData";```
+       3. TEMPERATURE SENSING AND CONVERSION
+    
+``` 
+switch(qry[3])
+          {
+          1) case 0x20:
+         t1=(analogValue/1024.0) * 3300;      (analogValue = analogRead(outputpin),
+         (outputpin= A0);
+          Serial.print("temp: ");
+          Serial.println(t1);
+          break;  
+       2) case 0x21:
+         do the following  to obtain the Celsius value,
+          t2=t1/10; 
+          Serial.print("celc: ");
+          Serial.println(t2);
+          break;   
+       3) case 0x22:
+          t3=((t2 * 9)/5 + 32);
+         celcius to Fahrenheit conversion
+         Serial.print("fhrn: ");
+         Serial.println(t3);
+         break;
+// *You can modify the code as per the requirements and the sensor used
 
-## Installation and settings of CC3200 and CCS:
-
-##### Follow the installation and settings of CC3200 through this link: https://www.youtube.com/watch?v=xbh9I8waq5g
-
-### Go on project explorer-> file name and right click from mouse and go in properties. Include the file path in ARM compiler-> include options (#include search path)
-
-> "C:\TI\CC3200SDK_1.3.0\cc3200-sdk\netapps"
-> "C:\TI\ccsv6\tools\compiler\ti-cgt-arm_5.2.5\include"
-> "C:\TI\CC3200SDK_1.3.0\cc3200-sdk\netapps\json"
-> "C:\TI\CC3200SDK_1.3.0\cc3200-sdk\driverlib"
-> "C:\TI\CC3200SDK_1.3.0\cc3200-sdk\inc"
-> "C:\TI\CC3200SDK_1.3.0\cc3200-sdk\example\common"
-> "C:\TI\CC3200SDK_1.3.0\cc3200-sdk\simplelink"
-> "C:\TI\CC3200SDK_1.3.0\cc3200-sdk\simplelink\source"
-> "C:\TI\CC3200SDK_1.3.0\cc3200-sdk\simplelink_extlib\provisioninglib"
-> "C:\TI\CC3200SDK_1.3.0\cc3200-sdk\oslib"
-> "C:\TI\CC3200SDK_1.3.0\cc3200-sdk\netapps\http\client"
-> "C:\TI\CC3200SDK_1.3.0\cc3200-sdk\simplelink\include"
-
-### Include the file path in ARM linker-> file search
-
-> Include library file or command file:
-
-> "libc.a"
-> "C:\TI\CC3200SDK_1.3.0\cc3200-sdk\driverlib\ccs\Release\driverlib.a"
-> "C:\TI\CC3200SDK_1.3.0\cc3200-sdk\simplelink\ccs\NON_OS\simplelink.a"
-> "C:\TI\CC3200SDK_1.3.0\cc3200-sdk\oslib\ccs\free_rtos\free_rtos.a"
-> "C:\TI\CC3200SDK_1.3.0\cc3200-sdk\netapps\json\ccs\Release\json.a"
-> “C:\TI\CC3200SDK_1.3.0\cc3200sdk\netapps\http\client\ccs\HTTPClientMinLib\webclient.a"
-> Add <dir> to library search path
-> "${CG_TOOL_ROOT}/lib"
-> "C:\TI\CC3200SDK_1.3.0\cc3200-sdk\simplelink\include"
-> "${CC3200_SDK_ROOT}/netapps/json/ccs/Release/"
-> "C:\TI\CC3200SDK_1.3.0\cc3200-sdk\simplelink\ccs\OS"
-> "C:\TI\CC3200SDK_1.3.0\cc3200-sdk\netapps\http\client"
-> "C:\TI\CC3200SDK_1.3.0\cc3200-sdk\simplelink"
-> "C:\TI\CC3200SDK_1.3.0\cc3200-sdk\oslib\ccs\free_rtos"
-> "D:\webclient\HTTPClientMinLib"
-
-### Code modification:
-
-Firstly, mention the host name and url respectively in main.c.
-```
-const char *soft_layer = "api.thingsio.ai"
-
-#define CREATEA_SESSION_URI " /devices/deviceData "
-```
-
-Change the json data format like:
-
-Change the device ID and slave_id.
-
-{ "device_id": "integer", "dts": "date-time", "slave_id": "integer":, "data": {} }
-
-Example:
-```
-#define POST_HEADER "{"
-
-#define POST_timestamp "\n\"dts\":"
-
-#define POST_DEVICEID ",\n\"device_id\":201426,"
-
-#define POST_SLAVE "\n\"slave_id\":"
-
-
-
-#define POST_HEADER1 "\n\"data\":"
-
-#define POST_BEGIN "{"
-
-//
-
-//
-
-//#define POST_CHUNK_1 "\n\"device_type\":"
-
-//#define POST_CHUNK_2 "\n\"e_today\":"
-
-//#define POST_CHUNK_3 "\n\"e_total\":"
-
-//#define POST_CHUNK_4 "\n\"h_total\":"
-
-//#define POST_CHUNK_5 "\n\"running_status\":"
-
-//#define POST_CHUNK_25 "\n\"qac\":"
-
-//
-
-#define POST_END "\n}"
-
-#define POST_TAIL1 "\n}"
+         provide the device id as well as the slave id
+         String PostValue = "{\"device_id\": 201840, \"slave_id\": 2";
+         Post the values 
+         PostValue = PostValue + ",\"dts\":" +timestamp;
+         PostValue = PostValue +",\"data\":{\"celc\":" + t2 +",\"fahr\":" + t3 +"}"+"}";
+//Celc  temperature in celcius
+//Fahrtemperature in Fahrenheit
 ```
 
 
-Change the address and number of slave because here, we are using Modbus protocol. You can remove Modbus when you are using any sensor.
-```
-const int Adress[5] = {10001, 10002, 10004, 10006 ,10012}
-```
-Change slave name according to the address
-```
-const char*name_list[5] = {"device_type","e_today","e_total", "h_total" , "running_status"}
-
-Construct_post_buffer()
-
-//Modify the case according to number of slaves :
-
-start_val = 0;
-
-end_val = 5;
-
-break;
  
-//Change buffer location according to json data:
-
-Example: strcpy(pcBufLocation,POST_HEADER);
-
-pcBufLocation += strlen(POST_HEADER);
-
-
-strcpy(pcBufLocation,POST_HEADER1);
-
-pcBufLocation += strlen(POST_HEADER1);
-```
-In HTTPLoginMethod and HTTPPostMethod , please make sure that content type should be “application/json”.
-
-For wi-fi settings, go in project explorer->your_file->/example/common->common.h
-
-Change SSID_NAME, SECURITY_KEY and SECURITY_TYPE = “SL_SEC_TYPE_WPA” or WPA2
-
-Plugin the CC3200 through USB cable. Check in device manager the port name and number.
-
-Check the pin configuration and shorting of pins in CC3200.
-
-Go in debug option and debug it.
-
-Open the Hercules or tera-term application to see the output/procedure of the CC3200.
-
-Go in serial and set the Name: according to your port number, Baud rate: 19200, Data size: 8 and Parity: none and open it.
-
-Go in CCS and play the code.
-
-You can see all the response from the server, login details, connection with the wi-fi etc. in Hercules or tera-term.
